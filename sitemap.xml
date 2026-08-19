@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  TruePostcode sitemap — deliberately minimal for now. The site is currently a
-  single-page tool (every postcode search renders into the same URL), so there
-  are no per-postcode pages yet to list here — see the client-side routing
-  task in the project notes for what unlocks that. Once postcode report pages
-  have their own URLs, this file should be regenerated (or served dynamically)
-  to include them; a hand-maintained list won't scale to thousands of postcodes.
-  Replace truepostcode.example below with the real production domain.
+  TruePostcode sitemap — deliberately limited to the static pages. Individual
+  postcode reports now have their own real URLs (/report/postcode-slug, via
+  netlify/edge-functions/report-meta.js) and ARE indexable, but there's no
+  fixed list of them to enumerate here — there are 1.8m+ UK postcodes, so a
+  hand-maintained or even generated sitemap entry per postcode isn't practical
+  at this stage. Search engines will still discover and index individual
+  /report/... pages by following links to them (e.g. from search results
+  pages, social shares) even without a sitemap entry — this file just points
+  crawlers at the pages that always exist.
+  Currently pointed at truepostcode.netlify.app — update every URL below if
+  you move to a custom domain.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://truepostcode.example/</loc>
+    <loc>https://truepostcode.netlify.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://truepostcode.example/about.html</loc>
+    <loc>https://truepostcode.netlify.app/about.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://truepostcode.example/privacy-policy.html</loc>
+    <loc>https://truepostcode.netlify.app/privacy-policy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
-    <loc>https://truepostcode.example/terms.html</loc>
+    <loc>https://truepostcode.netlify.app/terms.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
-    <loc>https://truepostcode.example/accessibility.html</loc>
+    <loc>https://truepostcode.netlify.app/accessibility.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
