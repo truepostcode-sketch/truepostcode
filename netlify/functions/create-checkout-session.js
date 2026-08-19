@@ -54,7 +54,9 @@ exports.handler = async (event) => {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
+      // No payment_method_types here on purpose — Stripe's Managed Payments
+      // (on by default for newer accounts) chooses payment methods itself and
+      // rejects this parameter if it's set explicitly.
       line_items: [{
         price_data: {
           currency: 'gbp',
