@@ -19,6 +19,13 @@
 // does) will still see the real content; one that doesn't will at least see
 // an accurate, unique title and description per postcode, which is what
 // actually gets a result clicked in search listings.
+//
+// HTMLRewriter isn't a built-in global here (unlike Cloudflare Workers) —
+// it's imported via the "html-rewriter" specifier, mapped to a real module
+// URL in netlify/edge-functions/import_map.json, which netlify.toml points
+// to via `deno_import_map`. Without that import map this line fails with
+// "HTMLRewriter is not defined" and the whole function crashes.
+import { HTMLRewriter } from 'html-rewriter';
 
 export default async (request, context) => {
   const url = new URL(request.url);
