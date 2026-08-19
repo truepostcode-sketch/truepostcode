@@ -57,6 +57,16 @@ exports.handler = async (event) => {
       // No payment_method_types here on purpose — Stripe's Managed Payments
       // (on by default for newer accounts) chooses payment methods itself and
       // rejects this parameter if it's set explicitly.
+      //
+      // Managed Payments is turned off for this session specifically:
+      // otherwise Stripe requires every product to have a tax code assigned
+      // (their built-in tax categorisation), which means setting up product
+      // tax categories/registration — a real business/tax decision, not
+      // something to configure blind. Disabling it here keeps checkout
+      // working exactly as a standard one-off card payment; Oli can revisit
+      // enabling it (and setting a tax code) later if he wants Stripe to
+      // handle tax calculation automatically.
+      managed_payments: { enabled: false },
       line_items: [{
         price_data: {
           currency: 'gbp',
