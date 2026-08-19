@@ -1,6 +1,6 @@
 # TruePostcode — robots.txt
-# Replace truepostcode.example below with the real production domain once one is live.
+# Currently pointed at truepostcode.netlify.app — update the line below if you move to a custom domain.
 User-agent: *
 Allow: /
 
-Sitemap: https://truepostcode.example/sitemap.xml
+Sitemap: https://truepostcode.netlify.app/sitemap.xml
