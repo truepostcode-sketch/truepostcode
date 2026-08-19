@@ -10,6 +10,12 @@
   functions = "netlify/functions"
   publish = "."
 
+# Needed by netlify/edge-functions/report-meta.js: HTMLRewriter isn't a
+# built-in global in Netlify's edge runtime (unlike Cloudflare Workers) — it
+# has to be imported from this mapped module.
+[functions]
+  deno_import_map = "./netlify/edge-functions/import_map.json"
+
 # SPA-style fallback: /report/dy12-2ee (and any other /report/* URL) serves
 # the same index.html — its own JS reads the postcode from the URL and runs
 # the search. Without this rule, refreshing or directly opening a shared
