@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accessibility Statement — TruePostcode</title>
+<meta name="description" content="TruePostcode's accessibility statement — our WCAG 2.1 AA commitment, what's been tested, and how to report an issue.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Newsreader:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-2: #ffffff; --page: #eeeeec; --text-primary: #14161a; --text-secondary: #52565e;
+    --muted: #6b6e74; --gridline: #dcdcd8; --border: rgba(15,17,20,0.11); --accent-2: #14443d;
+    --font-ui: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --font-display: 'Newsreader', Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { color-scheme: dark; --surface-2: #1e2022; --page: #0c0d0e; --text-primary: #f5f5f3;
+      --text-secondary: #b8bbc0; --muted: #83868c; --gridline: #2c2e31; --border: rgba(255,255,255,0.10); --accent-2: #4fa393; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-ui); background: var(--page); color: var(--text-primary); line-height: 1.65; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 90px; }
+  a.back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  a.back:hover { color: var(--text-primary); }
+  h1 { font-family: var(--font-display); font-size: 34px; font-weight: 550; margin: 18px 0 6px; letter-spacing: -.01em; }
+  .updated { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+  h2 { font-size: 17px; margin: 32px 0 10px; letter-spacing: -.01em; }
+  p, li { font-size: 15px; color: var(--text-secondary); }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--text-primary); }
+  .card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; }
+  a { color: var(--accent-2); }
+  footer { margin-top: 40px; font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to TruePostcode</a>
+  <h1>Accessibility Statement</h1>
+  <div class="updated">Last updated: 19 August 2026</div>
+  <div class="card">
+    <p>We want TruePostcode to be usable by everyone, including people using a keyboard alone, a screen reader, or with low vision. This isn't a legal requirement for a consumer site like this one, but it matters to us — and to anyone evaluating the tool for use on a business or agency site.</p>
+
+    <h2>Our standard</h2>
+    <p>We work to WCAG 2.1 level AA. Areas we've specifically checked and fixed: colour contrast on status indicators and body text, keyboard reachability of every interactive control (including the example-postcode buttons), screen-reader announcements for asynchronous loading states (via <code>aria-live</code> regions), and proper heading structure so the report's sections can be navigated by heading. Modals use the native <code>&lt;dialog&gt;</code> element for correct focus-trapping, and the site respects <code>prefers-reduced-motion</code>.</p>
+
+    <h2>Known limitations</h2>
+    <p>This is an actively developed product, not a finished, independently audited one. If you encounter a genuine barrier — something you can't complete with a keyboard or screen reader, or text you can't read at your preferred contrast/zoom — we want to know, and we treat these as real bugs, not polish.</p>
+
+    <h2>Reporting an issue</h2>
+    <p>Contact us at <a href="mailto:truepostcode@gmail.com">truepostcode@gmail.com</a> with what you were trying to do, the browser/assistive technology you were using, and what went wrong. We'll acknowledge genuine barriers and prioritise fixing them.</p>
+  </div>
+  <footer>This statement describes our current approach and testing, not a certified conformance audit.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "truepostcode",
+  "private": true,
+  "description": "TruePostcode — static site + Netlify Functions (Stripe payment) + Netlify Edge Function (per-postcode SEO meta tags). No build step for the site itself; this file exists so Netlify installs the `stripe` dependency for the functions.",
+  "dependencies": {
+    "stripe": "^16.0.0"
+  }
+}

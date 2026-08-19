@@ -1,0 +1,6 @@
+# TruePostcode — robots.txt
+# Replace truepostcode.example below with the real production domain once one is live.
+User-agent: *
+Allow: /
+
+Sitemap: https://truepostcode.example/sitemap.xml

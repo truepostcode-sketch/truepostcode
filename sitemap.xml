@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TruePostcode sitemap — deliberately minimal for now. The site is currently a
+  single-page tool (every postcode search renders into the same URL), so there
+  are no per-postcode pages yet to list here — see the client-side routing
+  task in the project notes for what unlocks that. Once postcode report pages
+  have their own URLs, this file should be regenerated (or served dynamically)
+  to include them; a hand-maintained list won't scale to thousands of postcodes.
+  Replace truepostcode.example below with the real production domain.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://truepostcode.example/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://truepostcode.example/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://truepostcode.example/privacy-policy.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://truepostcode.example/terms.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://truepostcode.example/accessibility.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+</urlset>

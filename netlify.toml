@@ -1,0 +1,24 @@
+# Netlify configuration for TruePostcode.
+#
+# Deploy this whole folder (not just index.html) to Netlify for the payment
+# flow and per-postcode SEO URLs to work — see PAYMENTS.md and the comments
+# in netlify/functions/*.js and netlify/edge-functions/report-meta.js for
+# what each piece does and what you need to configure (mainly: your Stripe
+# secret key as an environment variable — never in a file).
+
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+# SPA-style fallback: /report/dy12-2ee (and any other /report/* URL) serves
+# the same index.html — its own JS reads the postcode from the URL and runs
+# the search. Without this rule, refreshing or directly opening a shared
+# /report/... link would 404.
+[[redirects]]
+  from = "/report/*"
+  to = "/index.html"
+  status = 200
+
+[[edge_functions]]
+  path = "/report/*"
+  function = "report-meta"
