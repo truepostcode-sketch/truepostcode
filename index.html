@@ -2477,4 +2477,153 @@ els.proGenerateBtn.addEventListener('click', async () => {
     if (!res.ok || !data.url) throw new Error((data && data.error) || 'Could not start payment.');
     window.location.href = data.url;
   } catch (e) {
-    console.warn('Check
+    console.warn('Checkout session creation failed', e);
+    els.proPayStatus.textContent = "Payment isn't available right now — please try again shortly, or contact us if this keeps happening.";
+    els.proPayStatus.classList.add('error');
+    els.proGenerateBtn.disabled = false;
+  }
+});
+document.querySelectorAll('dialog').forEach(dialog => {
+  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+  dialog.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => dialog.close()));
+});
+els.shareCopyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(els.shareLinkInput.value);
+  } catch (e) { els.shareLinkInput.select(); }
+  els.shareCopyBtn.textContent = 'Copied!';
+  els.shareCopyBtn.classList.add('copied');
+  setTimeout(() => { els.shareCopyBtn.textContent = 'Copy'; els.shareCopyBtn.classList.remove('copied'); }, 1600);
+});
+
+// Embeddable widget mode — see the "Embed on your site" footer link and the
+// body.widget-mode CSS above. The snippet points at this same page with
+// ?widget=1, which is read at load time below to switch into compact mode.
+els.embedLinkBtn.addEventListener('click', e => {
+  e.preventDefault();
+  const widgetUrl = `${location.origin}${location.pathname}?widget=1`;
+  els.embedCodeInput.value = `<iframe src="${widgetUrl}" width="100%" height="560" style="border:1px solid #dcdcd8;border-radius:8px;" title="TruePostcode — free postcode flood risk & crime checker" loading="lazy"></iframe>`;
+  els.embedModal.showModal();
+});
+els.embedCopyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(els.embedCodeInput.value);
+  } catch (e) { els.embedCodeInput.select(); }
+  els.embedCopyBtn.textContent = 'Copied!';
+  els.embedCopyBtn.classList.add('copied');
+  setTimeout(() => { els.embedCopyBtn.textContent = 'Copy'; els.embedCopyBtn.classList.remove('copied'); }, 1600);
+});
+if (new URLSearchParams(location.search).get('widget') === '1') {
+  document.body.classList.add('widget-mode');
+}
+
+// --- Cookie consent (PECR/UK GDPR: no ad cookies until explicit opt-in,
+// rejecting must be exactly as easy as accepting) & AdSense-ready ad-slot
+// scaffolding. No ad network is wired in yet — see the <!-- ADSENSE --> HTML
+// comments for the two spots to drop in real <ins class="adsbygoogle"> units. ---
+const CONSENT_KEY = 'pc_consent'; // localStorage value: 'all' | 'necessary'
+function getConsent() {
+  try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
+}
+function setConsent(value) {
+  try { localStorage.setItem(CONSENT_KEY, value); } catch (e) { /* private browsing: banner just reappears next visit, which is fine */ }
+  hideCookieBanner();
+  renderAds();
+}
+function showCookieBanner() { els.cookieBanner.classList.add('show'); }
+function hideCookieBanner() { els.cookieBanner.classList.remove('show'); }
+
+let reportHasRendered = false;
+let anchorAdDismissed = false;
+// No real publisher ID is wired up yet (the <ins> units below still carry
+// placeholder ca-pub-/slot values, and the loader <script> in <head> is
+// commented out), so all three ad slots stay hidden even if AD_UNITS_LIVE is
+// flipped on early — a real visitor should never see a broken/empty ad box.
+// See the ADSENSE comment block in <head> for the exact steps to go live.
+// Site-visit revenue (not just PDF sales) is the point of these three slots:
+// a demo report auto-loads on every fresh page view, so adSlotTop/InContent
+// are live impressions on essentially every visit, not just ones that search.
+const AD_UNITS_LIVE = false;
+const adsRequested = new Set(); // element ids already pushed to adsbygoogle — request each slot once
+function requestAd(el) {
+  if (!el || adsRequested.has(el.id)) return;
+  const ins = el.querySelector('ins.adsbygoogle');
+  if (!ins) return;
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    adsRequested.add(el.id);
+  } catch (e) { console.warn('AdSense request failed', e); }
+}
+function renderAds() {
+  const adsAllowed = AD_UNITS_LIVE && getConsent() === 'all';
+  els.adSlotTop.style.display = adsAllowed ? 'flex' : 'none';
+  els.adSlotInContent.style.display = adsAllowed ? 'flex' : 'none';
+  els.adSlotAnchor.classList.toggle('show', adsAllowed && reportHasRendered && !anchorAdDismissed);
+  // Only ever reached when adsAllowed is true, so no ad request fires pre-consent
+  // (PECR/UK GDPR — no ad cookies or ad requests until the user opts in).
+  if (adsAllowed) {
+    requestAd(els.adSlotTop);
+    requestAd(els.adSlotInContent);
+    if (reportHasRendered && !anchorAdDismissed) requestAd(els.adSlotAnchor);
+  }
+}
+
+els.cookieAcceptBtn.addEventListener('click', () => setConsent('all'));
+els.cookieRejectBtn.addEventListener('click', () => setConsent('necessary'));
+els.cookieSettingsLink.addEventListener('click', e => { e.preventDefault(); showCookieBanner(); });
+els.adAnchorClose.addEventListener('click', () => { anchorAdDismissed = true; renderAds(); });
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!getConsent()) showCookieBanner();
+  renderAds();
+  initHeroMap();
+
+  // Returning from Stripe Checkout (see the proGenerateBtn handler above and
+  // netlify/functions/create-checkout-session.js's success_url). Payment is
+  // NEVER trusted from the URL alone — paid_session is only a session id;
+  // verify-session.js checks Stripe's own records server-side before the PDF
+  // is unlocked, which is what makes this a real payment gate rather than
+  // something anyone could bypass by typing a query param.
+  const params = new URLSearchParams(location.search);
+  const paidSessionId = params.get('paid_session');
+  if (paidSessionId) {
+    const pc = params.get('pc');
+    const forName = params.get('for') || '';
+    const byName = params.get('by') || '';
+    // Clean the URL immediately (before the async work below) so refreshing
+    // the page never re-runs verification against an already-used session id.
+    history.replaceState(null, '', pc ? reportUrl(pc) : `${location.origin}${location.pathname}`);
+    els.input.value = pc || 'DY12 2EE';
+    (async () => {
+      await runSearch(pc || 'DY12 2EE', false);
+      if (forName) els.proForInput.value = forName;
+      if (byName) els.proByInput.value = byName;
+      try {
+        const res = await fetchWithTimeout(`/.netlify/functions/verify-session?session_id=${encodeURIComponent(paidSessionId)}`, undefined, 15000);
+        const data = await res.json();
+        if (data.paid) {
+          printPdfNow();
+        } else {
+          els.proReportModal.showModal();
+          els.proPayStatus.textContent = "We couldn't confirm that payment completed. If you were charged, contact us and we'll sort out a PDF or a refund.";
+          els.proPayStatus.classList.add('error');
+        }
+      } catch (e) {
+        els.proReportModal.showModal();
+        els.proPayStatus.textContent = "We couldn't verify your payment just now. If you were charged, contact us and we'll sort out a PDF or a refund.";
+        els.proPayStatus.classList.add('error');
+      }
+    })();
+    return;
+  }
+
+  // Otherwise: if the page was opened via a shared /report/postcode-slug (or
+  // legacy #/postcode-slug) link, run that search instead of the demo.
+  const slug = slugFromCurrentLocation();
+  const initialPostcode = slug ? slugToPostcode(slug) : 'DY12 2EE';
+  els.input.value = initialPostcode;
+  runSearch(initialPostcode, !slug);
+});
+</script>
+</body>
+</html>
