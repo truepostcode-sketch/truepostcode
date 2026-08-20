@@ -889,7 +889,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 15h6M9 11h3"/></svg>
             PDF report <span class="price">· £4.99</span>
           </button>
-          <button class="example-pdf-btn" id="exampleReportBtn" title="See exactly what the paid PDF looks like, free — no payment needed">See example PDF</button>
+          <button class="example-pdf-btn" id="exampleReportBtn" title="See exactly what the paid PDF looks like, for a fixed example postcode — free, no payment needed">See example PDF</button>
           <button class="icon-btn" id="shareBtn" title="Share this report" aria-label="Share this report">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4"/></svg>
           </button>
@@ -2438,17 +2438,39 @@ function printPdfNow() {
   setTimeout(() => window.print(), 60);
 }
 
-// "See example PDF" — lets a visitor see exactly what the paid PDF looks
-// like, free, using whatever report is currently on screen (demo or a real
-// search). Deliberately NOT gated by the isExample/disabled logic that
-// guards the real Generate PDF button, since showing an example is fine
-// even on the demo report — that's the whole point of the button. The only
-// difference from the real flow is the badge forced on via
-// populatePdfCover(true), which stays on the printed page so it can never
-// be mistaken for the paid document.
-function printExamplePdf() {
-  populatePdfCover(true);
-  setTimeout(() => window.print(), 60);
+// "See example PDF" — shows exactly what the paid PDF looks like, free.
+// IMPORTANT: this always searches a FIXED example postcode (Buckingham
+// Palace), never whatever's currently on screen. Using the on-screen report
+// (an earlier version of this) would let anyone search their own real
+// postcode, click this button, and walk away with a free copy of that exact
+// paid PDF — turning the £4.99 report into a suggestion. Fixing the postcode
+// closes that off: this button can only ever produce one specific, publicly
+// recognisable example document, never a real user's own search.
+const EXAMPLE_PDF_POSTCODE = 'SW1A 1AA'; // Buckingham Palace
+
+async function printExamplePdf() {
+  if (els.exampleReportBtn.disabled) return;
+  els.exampleReportBtn.disabled = true;
+  const originalLabel = els.exampleReportBtn.textContent;
+  els.exampleReportBtn.textContent = 'Loading example…';
+  try {
+    // isExample=true here also disables the real Generate PDF button for the
+    // duration (see renderReport) and shows the on-screen "Example" tag —
+    // same protection as the auto-loaded homepage demo gets.
+    await runSearch(EXAMPLE_PDF_POSTCODE, true);
+    const normalise = p => p.replace(/\s+/g, '').toUpperCase();
+    const loadedExample = currentReportData && currentReportData.geo
+      && normalise(currentReportData.geo.postcode) === normalise(EXAMPLE_PDF_POSTCODE);
+    if (loadedExample) {
+      populatePdfCover(true);
+      setTimeout(() => window.print(), 60);
+    }
+    // If the lookup failed, runSearch has already shown the error via the
+    // usual status message — nothing extra to do here.
+  } finally {
+    els.exampleReportBtn.disabled = false;
+    els.exampleReportBtn.textContent = originalLabel;
+  }
 }
 if (els.exampleReportBtn) els.exampleReportBtn.addEventListener('click', printExamplePdf);
 
