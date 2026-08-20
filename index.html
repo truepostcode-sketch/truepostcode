@@ -217,17 +217,28 @@
   button.ghost svg { width: 14px; height: 14px; }
 
   .pro-pdf-btn {
-    font-family: var(--font-ui); font-size: 12.5px; font-weight: 700; padding: 8px 13px; border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 15px; font-weight: 700; padding: 14px 24px; border-radius: var(--radius);
     border: none; background: var(--accent-2); color: #fff; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 9px; white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(20,68,61,0.20);
     transition: transform .14s var(--ease-out), box-shadow .14s var(--ease-out);
   }
-  .pro-pdf-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .pro-pdf-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20,68,61,0.28); }
+  .pro-pdf-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .pro-pdf-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(20,68,61,0.30); }
   .pro-pdf-btn:active { transform: translateY(0) scale(0.98); }
   .pro-pdf-btn .price { opacity: .82; font-weight: 600; }
-  .pro-pdf-btn:disabled { background: var(--muted); cursor: not-allowed; opacity: .6; }
+  .pro-pdf-btn:disabled { background: var(--muted); cursor: not-allowed; opacity: .6; box-shadow: none; }
   .pro-pdf-btn:disabled:hover { transform: none; box-shadow: none; }
+
+  /* Secondary, deliberately much quieter than .pro-pdf-btn — this is a free
+     preview action sitting right next to a paid one, so it should read as
+     "the smaller option", not compete with it. */
+  .example-pdf-btn {
+    font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer;
+    white-space: nowrap; transition: border-color .14s var(--ease-out), color .14s var(--ease-out);
+  }
+  .example-pdf-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
   .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
   .chip {
@@ -271,7 +282,7 @@
   }
   .location-card .postcode-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
   .location-card h2 { font-family: var(--font-display); font-size: 27px; margin: 0; font-weight: 550; letter-spacing: -.01em; }
-  .location-card .actions { display: flex; gap: 8px; }
+  .location-card .actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .location-card .sub { font-size: 13.5px; color: var(--text-secondary); }
 
   .summary-strip { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
@@ -648,6 +659,15 @@
     }
     .pdf-cover-brand .mark svg { width: 19px; height: 19px; }
     .pdf-cover-brand span:last-child { font-family: var(--font-ui); font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+    /* Only shown when the "See example PDF" button is used (never for a real,
+       paid PDF — see printExamplePdf() / populatePdfCover(forceExample)) so a
+       free sample can never be mistaken for the paid deliverable if someone
+       prints or shares it. */
+    .pdf-cover-example-badge {
+      display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em; color: #fff; background: var(--warning);
+      padding: 5px 10px; border-radius: 4px; margin-top: 8px;
+    }
     .pdf-cover-kicker {
       font-family: var(--font-mono); font-size: 12px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .06em; color: var(--accent-2); margin: 64px 0 14px;
@@ -831,6 +851,7 @@
          when generating the PDF report. Kept in normal document flow (not a
          fixed/absolute overlay) so it simply becomes the first printed page. -->
     <div class="pdf-cover" id="pdfCover">
+      <div class="pdf-cover-example-badge" id="pdfCoverExampleBadge" style="display:none;">Example · sample report, not tied to a purchase</div>
       <div class="pdf-cover-brand">
         <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 9v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9z"/></svg></span>
         <span>TruePostcode</span>
@@ -868,6 +889,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 15h6M9 11h3"/></svg>
             PDF report <span class="price">· £4.99</span>
           </button>
+          <button class="example-pdf-btn" id="exampleReportBtn" title="See exactly what the paid PDF looks like, free — no payment needed">See example PDF</button>
           <button class="icon-btn" id="shareBtn" title="Share this report" aria-label="Share this report">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4"/></svg>
           </button>
@@ -1235,6 +1257,7 @@ const els = {
   embedCodeInput: document.getElementById('embedCodeInput'),
   embedCopyBtn: document.getElementById('embedCopyBtn'),
   proReportBtn: document.getElementById('proReportBtn'),
+  exampleReportBtn: document.getElementById('exampleReportBtn'),
   proReportModal: document.getElementById('proReportModal'),
   proForInput: document.getElementById('proForInput'),
   proByInput: document.getElementById('proByInput'),
@@ -1248,6 +1271,7 @@ const els = {
   pdfCoverBy: document.getElementById('pdfCoverBy'),
   pdfCoverByName: document.getElementById('pdfCoverByName'),
   pdfCoverDate: document.getElementById('pdfCoverDate'),
+  pdfCoverExampleBadge: document.getElementById('pdfCoverExampleBadge'),
   cookieBanner: document.getElementById('cookieBanner'),
   cookieAcceptBtn: document.getElementById('cookieAcceptBtn'),
   cookieRejectBtn: document.getElementById('cookieRejectBtn'),
@@ -2376,7 +2400,7 @@ els.proReportBtn.addEventListener('click', () => els.proReportModal.showModal())
 // outside the button's own click handler. 'beforeprint' fires for every print
 // path (Ctrl+P, the browser menu, and window.print()), so hooking it there
 // means the cover is always correct regardless of how printing was triggered.
-function populatePdfCover() {
+function populatePdfCover(forceExample = false) {
   els.pdfCoverTitle.textContent = (els.reportTitle.firstChild && els.reportTitle.firstChild.textContent) || els.reportTitle.textContent;
   els.pdfCoverSub.textContent = els.reportSub.textContent;
   const forName = els.proForInput.value.trim();
@@ -2386,6 +2410,11 @@ function populatePdfCover() {
   els.pdfCoverBy.style.display = byName ? '' : 'none';
   els.pdfCoverByName.textContent = byName;
   els.pdfCoverDate.textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  // The badge only ever appears via the free "See example PDF" button
+  // (printExamplePdf() below) — every other print path (the paid Generate
+  // PDF button, or the browser's own Ctrl+P via the 'beforeprint' listener)
+  // calls this with no argument, so it defaults to hidden.
+  if (els.pdfCoverExampleBadge) els.pdfCoverExampleBadge.style.display = forceExample ? '' : 'none';
   // Mirror the on-screen summary chips (flood risk / warnings / crime) onto
   // the cover so page 1 shows real at-a-glance findings instead of being
   // mostly white space — see the .pdf-cover-highlights CSS comment above.
@@ -2396,13 +2425,32 @@ function populatePdfCover() {
     return `<div class="pdf-cover-highlight-chip ${kind}">${escapeHtml(text)}</div>`;
   }).join('');
 }
-window.addEventListener('beforeprint', populatePdfCover);
+// NOTE: deliberately wrapped in an arrow function rather than passed
+// directly — addEventListener calls its handler with the Event object as
+// the first argument, which would otherwise land in populatePdfCover's
+// forceExample parameter (always truthy) and show the "Example" badge on
+// every print, including real paid PDFs triggered via native Ctrl+P.
+window.addEventListener('beforeprint', () => populatePdfCover());
 
 function printPdfNow() {
   populatePdfCover();
   if (els.proReportModal.open) els.proReportModal.close();
   setTimeout(() => window.print(), 60);
 }
+
+// "See example PDF" — lets a visitor see exactly what the paid PDF looks
+// like, free, using whatever report is currently on screen (demo or a real
+// search). Deliberately NOT gated by the isExample/disabled logic that
+// guards the real Generate PDF button, since showing an example is fine
+// even on the demo report — that's the whole point of the button. The only
+// difference from the real flow is the badge forced on via
+// populatePdfCover(true), which stays on the printed page so it can never
+// be mistaken for the paid document.
+function printExamplePdf() {
+  populatePdfCover(true);
+  setTimeout(() => window.print(), 60);
+}
+if (els.exampleReportBtn) els.exampleReportBtn.addEventListener('click', printExamplePdf);
 
 // Pay & generate PDF: creates a Stripe Checkout session for the postcode
 // currently on screen and redirects the browser there. Payment is confirmed
@@ -2429,153 +2477,4 @@ els.proGenerateBtn.addEventListener('click', async () => {
     if (!res.ok || !data.url) throw new Error((data && data.error) || 'Could not start payment.');
     window.location.href = data.url;
   } catch (e) {
-    console.warn('Checkout session creation failed', e);
-    els.proPayStatus.textContent = "Payment isn't available right now — please try again shortly, or contact us if this keeps happening.";
-    els.proPayStatus.classList.add('error');
-    els.proGenerateBtn.disabled = false;
-  }
-});
-document.querySelectorAll('dialog').forEach(dialog => {
-  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
-  dialog.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => dialog.close()));
-});
-els.shareCopyBtn.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(els.shareLinkInput.value);
-  } catch (e) { els.shareLinkInput.select(); }
-  els.shareCopyBtn.textContent = 'Copied!';
-  els.shareCopyBtn.classList.add('copied');
-  setTimeout(() => { els.shareCopyBtn.textContent = 'Copy'; els.shareCopyBtn.classList.remove('copied'); }, 1600);
-});
-
-// Embeddable widget mode — see the "Embed on your site" footer link and the
-// body.widget-mode CSS above. The snippet points at this same page with
-// ?widget=1, which is read at load time below to switch into compact mode.
-els.embedLinkBtn.addEventListener('click', e => {
-  e.preventDefault();
-  const widgetUrl = `${location.origin}${location.pathname}?widget=1`;
-  els.embedCodeInput.value = `<iframe src="${widgetUrl}" width="100%" height="560" style="border:1px solid #dcdcd8;border-radius:8px;" title="TruePostcode — free postcode flood risk & crime checker" loading="lazy"></iframe>`;
-  els.embedModal.showModal();
-});
-els.embedCopyBtn.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(els.embedCodeInput.value);
-  } catch (e) { els.embedCodeInput.select(); }
-  els.embedCopyBtn.textContent = 'Copied!';
-  els.embedCopyBtn.classList.add('copied');
-  setTimeout(() => { els.embedCopyBtn.textContent = 'Copy'; els.embedCopyBtn.classList.remove('copied'); }, 1600);
-});
-if (new URLSearchParams(location.search).get('widget') === '1') {
-  document.body.classList.add('widget-mode');
-}
-
-// --- Cookie consent (PECR/UK GDPR: no ad cookies until explicit opt-in,
-// rejecting must be exactly as easy as accepting) & AdSense-ready ad-slot
-// scaffolding. No ad network is wired in yet — see the <!-- ADSENSE --> HTML
-// comments for the two spots to drop in real <ins class="adsbygoogle"> units. ---
-const CONSENT_KEY = 'pc_consent'; // localStorage value: 'all' | 'necessary'
-function getConsent() {
-  try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
-}
-function setConsent(value) {
-  try { localStorage.setItem(CONSENT_KEY, value); } catch (e) { /* private browsing: banner just reappears next visit, which is fine */ }
-  hideCookieBanner();
-  renderAds();
-}
-function showCookieBanner() { els.cookieBanner.classList.add('show'); }
-function hideCookieBanner() { els.cookieBanner.classList.remove('show'); }
-
-let reportHasRendered = false;
-let anchorAdDismissed = false;
-// No real publisher ID is wired up yet (the <ins> units below still carry
-// placeholder ca-pub-/slot values, and the loader <script> in <head> is
-// commented out), so all three ad slots stay hidden even if AD_UNITS_LIVE is
-// flipped on early — a real visitor should never see a broken/empty ad box.
-// See the ADSENSE comment block in <head> for the exact steps to go live.
-// Site-visit revenue (not just PDF sales) is the point of these three slots:
-// a demo report auto-loads on every fresh page view, so adSlotTop/InContent
-// are live impressions on essentially every visit, not just ones that search.
-const AD_UNITS_LIVE = false;
-const adsRequested = new Set(); // element ids already pushed to adsbygoogle — request each slot once
-function requestAd(el) {
-  if (!el || adsRequested.has(el.id)) return;
-  const ins = el.querySelector('ins.adsbygoogle');
-  if (!ins) return;
-  try {
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-    adsRequested.add(el.id);
-  } catch (e) { console.warn('AdSense request failed', e); }
-}
-function renderAds() {
-  const adsAllowed = AD_UNITS_LIVE && getConsent() === 'all';
-  els.adSlotTop.style.display = adsAllowed ? 'flex' : 'none';
-  els.adSlotInContent.style.display = adsAllowed ? 'flex' : 'none';
-  els.adSlotAnchor.classList.toggle('show', adsAllowed && reportHasRendered && !anchorAdDismissed);
-  // Only ever reached when adsAllowed is true, so no ad request fires pre-consent
-  // (PECR/UK GDPR — no ad cookies or ad requests until the user opts in).
-  if (adsAllowed) {
-    requestAd(els.adSlotTop);
-    requestAd(els.adSlotInContent);
-    if (reportHasRendered && !anchorAdDismissed) requestAd(els.adSlotAnchor);
-  }
-}
-
-els.cookieAcceptBtn.addEventListener('click', () => setConsent('all'));
-els.cookieRejectBtn.addEventListener('click', () => setConsent('necessary'));
-els.cookieSettingsLink.addEventListener('click', e => { e.preventDefault(); showCookieBanner(); });
-els.adAnchorClose.addEventListener('click', () => { anchorAdDismissed = true; renderAds(); });
-
-window.addEventListener('DOMContentLoaded', () => {
-  if (!getConsent()) showCookieBanner();
-  renderAds();
-  initHeroMap();
-
-  // Returning from Stripe Checkout (see the proGenerateBtn handler above and
-  // netlify/functions/create-checkout-session.js's success_url). Payment is
-  // NEVER trusted from the URL alone — paid_session is only a session id;
-  // verify-session.js checks Stripe's own records server-side before the PDF
-  // is unlocked, which is what makes this a real payment gate rather than
-  // something anyone could bypass by typing a query param.
-  const params = new URLSearchParams(location.search);
-  const paidSessionId = params.get('paid_session');
-  if (paidSessionId) {
-    const pc = params.get('pc');
-    const forName = params.get('for') || '';
-    const byName = params.get('by') || '';
-    // Clean the URL immediately (before the async work below) so refreshing
-    // the page never re-runs verification against an already-used session id.
-    history.replaceState(null, '', pc ? reportUrl(pc) : `${location.origin}${location.pathname}`);
-    els.input.value = pc || 'DY12 2EE';
-    (async () => {
-      await runSearch(pc || 'DY12 2EE', false);
-      if (forName) els.proForInput.value = forName;
-      if (byName) els.proByInput.value = byName;
-      try {
-        const res = await fetchWithTimeout(`/.netlify/functions/verify-session?session_id=${encodeURIComponent(paidSessionId)}`, undefined, 15000);
-        const data = await res.json();
-        if (data.paid) {
-          printPdfNow();
-        } else {
-          els.proReportModal.showModal();
-          els.proPayStatus.textContent = "We couldn't confirm that payment completed. If you were charged, contact us and we'll sort out a PDF or a refund.";
-          els.proPayStatus.classList.add('error');
-        }
-      } catch (e) {
-        els.proReportModal.showModal();
-        els.proPayStatus.textContent = "We couldn't verify your payment just now. If you were charged, contact us and we'll sort out a PDF or a refund.";
-        els.proPayStatus.classList.add('error');
-      }
-    })();
-    return;
-  }
-
-  // Otherwise: if the page was opened via a shared /report/postcode-slug (or
-  // legacy #/postcode-slug) link, run that search instead of the demo.
-  const slug = slugFromCurrentLocation();
-  const initialPostcode = slug ? slugToPostcode(slug) : 'DY12 2EE';
-  els.input.value = initialPostcode;
-  runSearch(initialPostcode, !slug);
-});
-</script>
-</body>
-</html>
+    console.warn('Check
